@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Request OTP</title>
+     <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #80deea);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #01579b;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+    }
+
+    .card h2 {
+      color: #00796b;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .input-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    button {
+      margin-top: 1rem;
+      width: 100%;
+      background-color: #0288d1;
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0277bd;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #01579b;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .otp-message {
+      margin-top: 1rem;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+      <header>
+    <h1>UrbanFlow Pothole</h1>
+    <a href="index.html">🏠 Home</a>
+  </header>
+
+    <main>
+        <div class="card">
+            <h2>Send OTP</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" name="phone" id="phone" placeholder="Enter phone number" required />
+                </div>
+                <button type="submit">Send OTP</button>
+            </form>
+            {% if otp_message %}
+                <p class="otp-message">{{ otp_message }}</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 UrbanFlow Pothole Reporting System</p>
+    </footer>
+</body>
+</html>

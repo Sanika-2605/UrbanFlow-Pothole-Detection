@@ -1,0 +1,229 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<form id="report-form" method="POST">
+  {% csrf_token %}
+  <input type="text" name="reporter" placeholder="Your Name" required>
+  <input type="text" name="area" placeholder="Area" required>
+  <select name="severity" required>
+    <option>low</option>
+    <option>medium</option>
+    <option>high</option>
+  </select>
+  <select name="status">
+    <option>Detected</option>
+    <option>In Progress</option>
+    <option>Resolved</option>
+  </select>
+  <input type="text" name="image_url" placeholder="Image URL">
+  <button type="submit">Submit</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $('#report-form').on('submit', function (e) {
+    e.preventDefault();  // Prevent normal form submit
+    $.ajax({
+      type: 'POST',
+      url: '/submit_report/',
+      data: $(this).serialize(),
+      success: function () {
+        alert('✅ Report submitted successfully!');
+        $('#report-form')[0].reset();  // Clear form
+      },
+      error: function () {
+        alert('❌ Something went wrong. Please try again.');
+      }
+    });
+  });
+</script>
+</body>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Citizen Dashboard - Report Pothole</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #e0f2f1, #80cbc4);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #00695c;
+            color: white;
+            padding: 1rem 2rem;
+            text-align: center;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .form-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #004d40;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            background-color: #00796b;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00695c;
+        }
+
+        .message {
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        footer {
+            background-color: #004d40;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>UrbanFlow - Report a Pothole</h1>
+    </header>
+
+    <main>
+        <div class="form-card">
+            <h2>Submit Pothole Report</h2>
+            <form method="POST" action="/api/submit-report/" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" name="location" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="landmark">Nearby Landmark</label>
+                    <input type="text" name="landmark">
+                </div>
+
+                <div class="form-group">
+                    <label for="severity">Severity</label>
+                    <select name="severity" required>
+                        <option value="">-- Select Severity --</option>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Upload Image</label>
+                    <input type="file" name="image" accept="image/*">
+                </div>
+
+                <button type="submit">Submit Report</button>
+            </form>
+
+            {% if success_message %}
+                <div class="message">{{ success_message }}</div>
+            {% endif %}
+            {% if error_message %}
+                <div class="message error">{{ error_message }}</div>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 UrbanFlow | Citizen Portal</p>
+    </footer>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $('#report-form').on('submit', function (e) {
+    e.preventDefault();  // Prevent normal form submit
+    $.ajax({
+      type: 'POST',
+      url: '/submit_report/',
+      data: $(this).serialize(),
+      success: function () {
+        alert('✅ Report submitted successfully!');
+        $('#report-form')[0].reset();  // Clear form
+      },
+      error: function () {
+        alert('❌ Something went wrong. Please try again.');
+      }
+    });
+  });
+</script>
+</body>
+</html>

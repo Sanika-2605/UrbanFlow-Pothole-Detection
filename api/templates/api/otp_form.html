@@ -1,0 +1,35 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if stage == 'send' %}
+  <h2>Enter Phone Number</h2>
+  <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="phone" required>
+    <button type="submit">Send OTP</button>
+  </form>
+
+{% elif stage == 'verify' %}
+  <h2>Enter OTP sent to {{ phone }}</h2>
+  <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="otp" required>
+    <button type="submit">Verify</button>
+  </form>
+{% endif %}
+
+{% if messages %}
+  <ul>
+    {% for msg in messages %}
+      <li>{{ msg }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+</body>
+</html> -->

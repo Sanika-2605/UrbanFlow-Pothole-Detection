@@ -1,0 +1,8 @@
+{
+    "code-runner.clearPreviousOutput": false,
+    "code-runner.ignoreSelection": false,
+    "code-runner.fileDirectoryAsCwd": false,
+    "code-runner.runInTerminal": true,
+    "code-runner.showRunIconInEditorTitleMenu": true,
+    "code-runner.showStopIconInEditorTitleMenu": true
+}

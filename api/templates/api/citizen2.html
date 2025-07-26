@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Citizen Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #f1faff);
+      color: #013a63;
+    }
+    header {
+      background: #01497c;
+      color: white;
+      padding: 1rem;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #menuToggle {
+      position: absolute;
+      left: 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      left: -220px;
+      height: 100%;
+      width: 220px;
+      background: #003b6f;
+      padding-top: 4rem;
+      transition: 0.3s ease;
+      z-index: 999;
+    }
+    nav.show {
+      left: 0;
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+    }
+    nav ul li {
+      margin: 1rem 0;
+      text-align: center;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      display: block;
+      padding: 0.75rem 1rem;
+      background: #0077b6;
+      border-radius: 5px;
+      transition: background 0.3s ease;
+    }
+    nav ul li a:hover {
+      background: #0096c7;
+    }
+    main {
+      padding: 6rem 1rem 2rem;
+    }
+    .card {
+      background: #ffffff;
+      margin: 2rem auto;
+      padding: 2rem;
+      max-width: 800px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      display: none;
+    }
+    .card.active {
+      display: block;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    h2 {
+      text-align: center;
+      color: #01497c;
+      margin-bottom: 1rem;
+    }
+    form input, form select, form textarea, form button {
+      display: block;
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    form button {
+      background-color: #014f86;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    form button:hover {
+      background-color: #012a4a;
+    }
+    .fixed-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      padding-top: 1rem;
+    }
+    .fixed-item {
+      background: #caf0f8;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .fixed-item img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    .extra-info {
+      background: #edf6ff;
+      border-left: 4px solid #0077b6;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      color: #023e8a;
+    }
+    .extra-info ul {
+      padding-left: 1.5rem;
+    }
+    footer {
+      text-align: center;
+      padding: 1.2rem;
+      background: #01497c;
+      color: white;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div id="menuToggle" onclick="toggleMenu()">☰</div>
+    <h1>Citizen Dashboard</h1>
+  </header>
+
+  <nav id="sidebar">
+    <ul>
+      <li><a href="#about" class="menu-link">About</a></li>
+      <li><a href="#submit" class="menu-link">Submit</a></li>
+      <li><a href="#fixed" class="menu-link">Fixed Reports</a></li>
+      <li class="logout"><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <!-- ABOUT SECTION -->
+    <div class="card active" id="about">
+      <h2>Submit Report</h2>
+      <form  method="POST" action="/api/submit-report/" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <input type="text" name="name" placeholder="Your Name" required />
+  <input type="text" name="phone" placeholder="Phone Number" required />
+  <input type="text" name="location" placeholder="Location" required />
+  <input type="text" name="landmark" placeholder="Landmark" />
+
+  <select name="severity" required>
+    <option value="Low">Low</option>
+    <option value="Medium">Medium</option>
+    <option value="High">High</option>
+  </select>
+
+  <input type="file" name="image" accept="image/*" />
+
+  <button type="submit">Submit Report</button>
+</form>
+{% if success_message %}
+  <p style="color: green;">{{ success_message }}</p>
+{% endif %}
+{% if error_message %}
+  <p style="color: red;">{{ error_message }}</p>
+{% endif %}
+      <p id="greeting"></p>
+      <div class="extra-info">
+        <h4>Why provide your details?</h4>
+        <ul>
+          <li>Identify pothole hotspots by area</li>
+          <li>Get updates when potholes are fixed</li>
+          <li>Maintain civic transparency</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SUBMIT SECTION -->
+    <div class="card" id="submit">
+      <h2>Submit a Pothole Report</h2>
+      <form>
+        <!-- <label>Upload Image:</label>
+        <input type="file" accept="image/*" required />
+        <label>Take a Photo:</label>
+        <input type="file" accept="image/*" capture="environment" />
+        <label>Severity:</label>
+        <select required>
+          <option value="">Select severity</option>
+          <option>Low</option>
+          <option>Medium</option>
+          <option>High</option>
+        </select>
+        <label>Location:</label>
+        <textarea rows="2" placeholder="Enter location..." required></textarea> -->
+       <!-- <form method="POST" action="/api/submit_report/">
+  {% csrf_token %}
+ 
+</form>
+      </form>
+      <div class="extra-info">
+        <p><strong>Tip:</strong> A clear photo and precise location will help us respond faster.</p>
+      </div>
+    </div>
+
+    <!- FIXED REPORTS SECTION -->
+    <div class="card" id="fixed">
+      <h2>Fixed Pothole Reports</h2>
+      <div class="fixed-gallery">
+        <div class="fixed-item">
+          <img src="https://via.placeholder.com/150x100?text=Fixed+1" alt="Fixed 1">
+          <p>Severity: Medium</p><strong>Fixed</strong>
+        </div>
+        <div class="fixed-item">
+          <img src="https://via.placeholder.com/150x100?text=Fixed+2" alt="Fixed 2">
+          <p>Severity: High</p><strong>Fixed</strong>
+        </div>
+        <div class="fixed-item">
+          <img src="https://via.placeholder.com/150x100?text=Fixed+3" alt="Fixed 3">
+          <p>Severity: Low</p><strong>Fixed</strong>
+        </div>
+        <div class="fixed-item">
+          <img src="https://via.placeholder.com/150x100?text=Fixed+4" alt="Fixed 4">
+          <p>Severity: Medium</p><strong>Fixed</strong>
+        </div>
+      </div>
+      <div class="extra-info">
+        <p><strong>Want your report featured?</strong> Ensure image clarity and enable GPS tagging when reporting.</p>
+      </div>
+    </div>
+   
+
+  </main>
+
+  <footer>
+    &copy; 2025 UrbanFlow Pothole Detection & Alert Notification. All Rights Reserved.
+  </footer>
+
+  <script>
+  //     $('#report-form').on('submit', function (e) {
+  //   e.preventDefault();  // Prevent normal form submit
+  //   $.ajax({
+  //     type: 'POST',
+  //     url: '/submit_report/',
+  //     data: $(this).serialize(),
+  //     success: function () {
+  //       alert('✅ Report submitted successfully!');
+  //       $('#report-form')[0].reset();  // Clear form
+  //     },
+  //     error: function () {
+  //       alert('❌ Something went wrong. Please try again.');
+  //     }
+  //   });
+  // });
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('show');
+    }
+
+    function updateGreeting(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      document.getElementById('greeting').innerText = `Hello, ${name}!`;
+    }
+
+    const links = document.querySelectorAll('.menu-link');
+    const cards = document.querySelectorAll('.card');
+
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        cards.forEach(card => card.classList.remove('active'));
+        const targetCard = document.getElementById(targetId);
+        if (targetCard) {
+          targetCard.classList.add('active');
+        }
+        document.getElementById('sidebar').classList.remove('show');
+      });
+    });
+  </script>
+</body>
+</html>

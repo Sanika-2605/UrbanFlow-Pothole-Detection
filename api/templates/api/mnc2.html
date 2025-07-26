@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MNC Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f9ff;
+      color: #003366;
+    }
+    header {
+      background-color: #004080;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      margin: 0;
+    }
+    
+
+.logout-btn {
+  background-color: #e60000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+    .dashboard {
+      padding: 2rem;
+    }
+    .stats {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem 2rem;
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      display: flex;
+      align-items: center;
+      
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      background-color: #eaf3ff;
+    }
+    .filters {
+      margin-bottom: 2rem;
+    }
+    .filters label {
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    .filters select {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-right: 1rem;
+    }
+    .charts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .chart-box {
+      background-color: white;
+      padding: 1rem;
+      border-radius: 12px;
+      flex: 1;
+      min-width: 300px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .chart-box canvas {
+      max-height: 250px;
+      
+    }
+    .reports {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .report-item {
+      border-bottom: 1px solid #ccc;
+      padding: 1rem 0;
+    }
+    .report-item:last-child {
+      border-bottom: none;
+    }
+    .report-item button {
+      margin-left: 8px;
+      padding: 4px 8px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .footer {
+      margin-top: 3rem;
+      background-color: #003366;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MNC Office Dashboard</h1>
+    <form action="/api/logout/" method="post" style="margin: 0;">
+  {% csrf_token %}
+  <button class="logout-btn" type="submit">Logout</button>
+</form>
+  </header>
+
+  <div class="dashboard">
+    <!-- Stat Cards -->
+    <div class="stats">
+      <div class="card" > Total Potholes : {{ total_reports }}</div>
+      <div class="card" > Active Users : {{ unique_users }}</div>
+      <div class="card" >Resolution Rate:  {{  resolution_rate }}</div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <label for="severity">Severity:</label>
+      <select id="severity">
+        <option>All</option>
+        <option>High</option>
+        <option>Medium</option>
+        <option>Low</option>
+      </select>
+
+      <label for="location">Location:</label>
+      <select id="location">
+        <option>All</option>
+        <option>Shivajinagar</option>
+        <option>Kothrud</option>
+        <option>Hadapsar</option>
+        <option>Baner</option>
+        <option>Viman Nagar</option>
+        <option>Wakad</option>
+        <option>Karve Nagar</option>
+        <option>Swargate</option>
+      </select>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+      <div class="chart-box">
+        <h3>Severity Distribution</h3>
+        <canvas id="severityChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Reports Per Area</h3>
+        <canvas id="areaChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Reports -->
+   <div class="reports">
+      <h2>All Pothole Reports</h2>
+      {% for report in reports %}
+      <div class="report-item">
+        <strong>{{ report.image }}</strong> - Severity: {{ report.severity }} | Area: {{ report.location }} | Date: {{ report.submitted_at|date:"Y-m-d" }} | Reported by: {{ report.name }}
+        <button>Verify</button>
+        <button>Resolve</button>
+      </div>
+      {% empty %}
+      <p>No reports available.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <footer class="footer">
+    &copy; 2025 UrbanFlow Pothole Detection & Alert Notification. All rights reserved.
+  </footer>
+
+  <!-- Charts Script -->
+  <!-- <script>
+    
+  const severityData = JSON.parse(document.getElementById('severity-data').textContent);
+  const areaData = JSON.parse(document.getElementById('area-data').textContent);
+
+  const ctx1 = document.getElementById('severityChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'pie',
+    data: {
+      labels: Object.keys(severityData),
+      datasets: [{
+        label: 'Severity',
+        data: Object.values(severityData),
+        backgroundColor: ['#ff4d4d', '#ffa64d', '#4da6ff']
+      }]
+    }
+  });
+
+  const ctx2 = document.getElementById('areaChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(areaData),
+      datasets: [{
+        label: 'Area Reports',
+        data: Object.values(areaData),
+        backgroundColor: '#3366cc'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script> -->
+
+
+ <script>
+    const ctx1 = document.getElementById('severityChart').getContext('2d');
+    const severityChart = new Chart(ctx1, {
+      type: 'pie',
+      data: {
+        labels: ['High', 'Medium', 'Low'],
+        datasets: [{
+          label: 'Severity',
+          data: [5, 8, 4],
+          backgroundColor: ['#ff4d4d', '#ffa64d', '#4da6ff']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+
+    const ctx2 = document.getElementById('areaChart').getContext('2d');
+    const areaChart = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['Shivajinagar', 'Kothrud', 'Hadapsar', 'Baner', 'Viman Nagar', 'Wakad'],
+        datasets: [{
+          label: 'Pothole Reports',
+          data: [3, 2, 4, 1, 5, 3],
+          backgroundColor: '#3366cc'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+

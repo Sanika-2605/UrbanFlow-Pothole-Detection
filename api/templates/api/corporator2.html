@@ -1,0 +1,277 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corporater Dashboard - UrbanFlow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }body {
+  background: linear-gradient(135deg, #dfe9f3, #ffffff);
+  color: #333;
+}
+
+header {
+  background-color: #1565c0;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn {
+  background-color: #e60000;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.container {
+  padding: 30px 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.dashboard-cards {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  padding: 25px;
+  border-radius: 15px;
+  flex: 1;
+  min-width: 250px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.filter {
+  margin-bottom: 30px;
+  text-align: right;
+}
+
+select {
+  padding: 12px 15px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.reports-title {
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.reports {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 20px;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  padding: 1rem;
+}
+
+.report-card {
+  flex: 0 0 auto; /* Prevent shrinking */
+  width: 300px; /* Fixed width for horizontal scroll */
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  width: calc(50% - 10px);
+  padding: 20px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;  
+}
+
+.report-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.report-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.report-info {
+  margin-top: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+
+.report img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .info {
+            margin-top: 10px;
+        }
+
+        .info strong {
+            color: #444;
+        }
+
+        .map-link {
+            display: inline-block;
+            margin-top: 5px;
+            background-color: #0f1363;
+            color: white;
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .map-link:hover {
+            background-color: #45a049;
+        }
+.badge {
+  display: inline-block;
+  padding: 5px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+.high { background-color: #d32f2f; }
+.medium { background-color: #f3a921; color: #333; }
+.low { background-color: #c4c419; }
+
+footer {
+  background-color: #1565c0;
+  color: white;
+  text-align: center;
+  padding: auto;
+  margin-top: 90px;
+  font-size: 14px;
+}
+
+@media(max-width: 768px) {
+  .card, .report-card {
+    width: 100%;
+  }
+  .filter {
+    text-align: left;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header style="background-color: #004080; color: white;align-items:center; padding: 1rem 2rem;font-size: 20px; display: flex; justify-content: space-between; align-items: center; position: relative;">
+  <h1 style="margin: 0;">Corporator Dashboard</h1>
+    
+  <form action="/api/logout/" method="post" style="margin: 0;">
+  {% csrf_token %}
+  <button class="logout-btn" type="submit">Logout</button>
+</form>
+
+  </header>  <div class="container">
+    <div class="dashboard-cards">
+      <div class="card">
+        <h3>Total Potholes in Area</h3>
+        <p><strong style="font-size: 28px;">{{ total }}</strong></p>
+      </div>
+      <div class="card">
+        <h3>Pending Review</h3>
+        <p><strong style="font-size: 28px;">{{ pending }}</strong></p>
+      </div>
+      <div class="card">
+        <h3>Resolved</h3>
+        <p><strong style="font-size: 28px;">{{ resolved }}</strong></p>
+      </div>
+    </div><div class="filter">
+  <label for="severity">Filter by Severity: </label>
+  <select id="severity" onchange="filterReports()">
+    <option value="all">All</option>
+    <option value="high">High</option>
+    <option value="medium">Medium</option>
+    <option value="low">Low</option>
+  </select>
+</div>
+
+{% if reports %}
+{% for report in reports %}
+<div class="report-card" data-severity="{{ report.severity|lower }}">
+
+
+  <h2>📍 {{ report.area|default:"Unknown Area" }}</h2>
+  {% if report.annotated_image %}
+  <img src="{{ report.image_url }}" alt="Pothole Image" />
+  {% endif %}
+
+  <div class="report-info">
+    <p>Status: <span class="badge {{ report.severity|lower }}">{{ report.status }}</span></p>
+    <p>Severity: <span class="badge {{ report.severity|lower }}">{{ report.severity }}</span></p>
+  
+    <p><strong>Latitude:</strong> {{ report.latitude }}</p>
+    <p><strong>Longitude:</strong> {{ report.longitude }}</p>
+    <p><strong>Address:</strong> {{ report.address|default:"Not Available" }}</p>
+    <p>Date: {{ report.date_reported|date:"Y-m-d" }}</p>
+    <p>Reported by: {{ report.name }}</p>
+
+      <a class="map-link" href="https://www.google.com/maps?q={{ report.latitude }},{{ report.longitude }}"
+                target="_blank">
+                View on Google Maps
+            </a>
+        </div>
+    </div>
+{% endfor %}
+{% else %}
+<p>No pothole reports found.</p>
+</div>
+{% endif %}
+
+
+
+  </div>  <footer>
+    &copy; 2025 UrbanFlow  Pothole Detection & Alert Notification. All rights reserved. Built for smarter city maintenance.
+  </footer>  <script>
+    function filterReports() {
+      const selected = document.getElementById('severity').value;
+      const cards = document.querySelectorAll('.report-card');
+
+      cards.forEach(card => {
+        const severity = card.getAttribute('data-severity');
+        if (selected === 'all' || severity === selected) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script></body>
+</html>
