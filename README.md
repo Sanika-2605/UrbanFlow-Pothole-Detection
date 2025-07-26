@@ -46,7 +46,7 @@ UrbanFlow_Pothole-Detection/
    cd UrbanFlow_Pothole-Detection
 
 
-   2. Install backend dependencies
+2. Install backend dependencies
       pip install -r requirements.txt
 
 
